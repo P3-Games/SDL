@@ -664,7 +664,7 @@ static int SDL_SYS_ToDIEFFECT(SDL_Haptic *haptic, DIEFFECT *dest,
         dest->lpvTypeSpecificParams = constant;
 
         /* Generics */
-        dest->dwDuration = hap_constant->length * 1000UL; /* In microseconds. */
+        dest->dwDuration = (hap_constant->length == SDL_HAPTIC_INFINITY) ? INFINITE : hap_constant->length * 1000UL; /* In microseconds. */
         dest->dwTriggerButton = DIGetTriggerButton(hap_constant->button);
         dest->dwTriggerRepeatInterval = hap_constant->interval;
         dest->dwStartDelay = hap_constant->delay * 1000UL; /* In microseconds. */
