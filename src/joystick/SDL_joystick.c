@@ -2478,24 +2478,33 @@ SDL_JoystickGUID SDL_CreateJoystickGUID(Uint16 bus, Uint16 vendor, Uint16 produc
 {
     SDL_JoystickGUID guid;
     Uint16 *guid16 = (Uint16 *)guid.data;
-    Uint16 crc = 0;
+    //Uint16 crc = 0;
 
     SDL_zero(guid);
 
-    if (vendor_name && *vendor_name && product_name && *product_name) {
-        crc = SDL_crc16(crc, vendor_name, SDL_strlen(vendor_name));
-        crc = SDL_crc16(crc, " ", 1);
-        crc = SDL_crc16(crc, product_name, SDL_strlen(product_name));
-    } else if (product_name) {
-        crc = SDL_crc16(crc, product_name, SDL_strlen(product_name));
+    //if (vendor_name && *vendor_name && product_name && *product_name) {
+    //    crc = SDL_crc16(crc, vendor_name, SDL_strlen(vendor_name));
+    //    crc = SDL_crc16(crc, " ", 1);
+    //    crc = SDL_crc16(crc, product_name, SDL_strlen(product_name));
+    //} else if (product_name) {
+    //    crc = SDL_crc16(crc, product_name, SDL_strlen(product_name));
+    //}
+
+    const char *name = SDL_CreateJoystickName(vendor, product, vendor_name, product_name);
+
+    if (!name) {
+        name = "";
     }
 
     /* We only need 16 bits for each of these; space them out to fill 128. */
     /* Byteswap so devices get same GUID on little/big endian platforms. */
     *guid16++ = SDL_SwapLE16(bus);
-    *guid16++ = SDL_SwapLE16(crc);
+    // 기존 코드에선 name crc 가 없었다 (EnumJoystickDetectCallback)
+    *guid16++ = 0;
+    //*guid16++ = SDL_SwapLE16(SDL_crc16(0, name, SDL_strlen(name)));
+    //*guid16++ = SDL_SwapLE16(crc);
 
-    if (vendor) {
+    if (vendor && product) {
         *guid16++ = SDL_SwapLE16(vendor);
         *guid16++ = 0;
         *guid16++ = SDL_SwapLE16(product);
@@ -2511,10 +2520,15 @@ SDL_JoystickGUID SDL_CreateJoystickGUID(Uint16 bus, Uint16 vendor, Uint16 produc
             guid.data[14] = driver_signature;
             guid.data[15] = driver_data;
         }
-        if (product_name) {
-            SDL_strlcpy((char *)guid16, product_name, available_space);
-        }
+
+        SDL_strlcpy((char *)guid16, name, available_space);
+        //if (product_name) {
+        //    SDL_strlcpy((char *)guid16, product_name, available_space);
+        //}
     }
+
+    SDL_free(name);
+
     return guid;
 }
 
