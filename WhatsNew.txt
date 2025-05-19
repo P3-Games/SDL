@@ -77,6 +77,9 @@ Android:
 * Enabled IME soft keyboard input
 * Added version checking to make sure the SDL Java and C code are compatible
 
+Windows:
+* The RAWINPUT joystick driver is disabled by default, since it's only needed to support more than 4 Xbox controllers, and adds significant complexity to the joystick processing.
+
 
 ---------------------------------------------------------------------------
 2.24.0:
