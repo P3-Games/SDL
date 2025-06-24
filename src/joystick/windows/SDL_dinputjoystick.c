@@ -464,6 +464,7 @@ static BOOL CALLBACK EnumJoystickDetectCallback(LPCDIDEVICEINSTANCE pDeviceInsta
     char *hidPath = NULL;
     char *name = NULL;
     LPDIRECTINPUTDEVICE8 device = NULL;
+    DIDEVCAPS caps;
 
     /* We are only supporting HID devices. */
     CHECK(pDeviceInstance->dwDevType & DIDEVTYPE_HID);
@@ -472,6 +473,9 @@ static BOOL CALLBACK EnumJoystickDetectCallback(LPCDIDEVICEINSTANCE pDeviceInsta
     CHECK(QueryDeviceName(device, &name));
     CHECK(QueryDevicePath(device, &hidPath));
     CHECK(QueryDeviceInfo(device, &vendor, &product));
+
+    caps.dwSize = sizeof(caps);
+    CHECK(SUCCEEDED(IDirectInputDevice8_GetCapabilities(device, &caps)));
 
     CHECK(!SDL_IsXInputDevice(vendor, product, hidPath));
 
